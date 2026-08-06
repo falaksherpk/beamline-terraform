@@ -1,0 +1,48 @@
+#cloud-config
+hostname: ${hostname}
+fqdn: ${hostname}
+manage_etc_hosts: false
+
+users:
+  - name: ${username}
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ${ssh_public_key}
+
+package_update: true
+package_upgrade: false
+
+packages:
+  - qemu-guest-agent
+  - curl
+  - vim
+
+growpart:
+  mode: auto
+  devices: ['/']
+  ignore_growroot_disabled: false
+resize_rootfs: true
+
+write_files:
+  - path: /etc/netplan/90-beamline-static.yaml
+    permissions: '0600'
+    content: |
+      network:
+        version: 2
+        ethernets:
+          lab0:
+            match:
+              macaddress: "${mac_lab}"
+            set-name: lab0
+            addresses: [${ip}/24]
+          nat0:
+            match:
+              macaddress: "${mac_nat}"
+            set-name: nat0
+            dhcp4: true
+
+runcmd:
+  - systemctl enable --now qemu-guest-agent
+  - netplan apply
