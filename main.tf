@@ -39,6 +39,12 @@ resource "libvirt_cloudinit_disk" "seed" {
     mac_nat        = format("52:54:00:20:10:%02x", each.value.id)
   })
 
+  network_config = templatefile("${path.module}/cloud-init/network-config.tmpl", {
+    ip      = each.value.ip
+    mac_lab = format("52:54:00:10:10:%02x", each.value.id)
+    mac_nat = format("52:54:00:20:10:%02x", each.value.id)
+  })
+
   meta_data = yamlencode({
     instance-id    = each.key
     local-hostname = each.key
