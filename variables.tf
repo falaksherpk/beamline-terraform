@@ -35,6 +35,12 @@ variable "vms" {
     virtio_mem = { target_size = 2048, requested_size = 512 } }
     "obs.beamline" = { ip = "10.10.10.41", memory = 2048, vcpu = 2, disk_gb = 30, id = 41,
     virtio_mem = { target_size = 2048, requested_size = 512 } }
+    "hpc-ctl.beamline" = { ip = "10.10.10.51", memory = 2048, vcpu = 2, disk_gb = 20, id = 51,
+    virtio_mem = { target_size = 2048, requested_size = 512 } }
+    "hpc-c1.beamline" = { ip = "10.10.10.52", memory = 2048, vcpu = 2, disk_gb = 20, id = 52,
+    virtio_mem = { target_size = 2048, requested_size = 512 } }
+    "hpc-gpu.beamline" = { ip = "10.10.10.53", memory = 4096, vcpu = 2, disk_gb = 30, id = 53,
+    virtio_mem = { target_size = 2048, requested_size = 512 } }
   }
 }
 
