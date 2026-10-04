@@ -26,9 +26,8 @@ resource "libvirt_volume" "disk" {
 }
 
 resource "libvirt_cloudinit_disk" "seed" {
-  for_each  = var.vms
-  name      = "${each.key}-cloudinit"
-  staging_directory = "${path.module}/${var.cloudinit_staging_dir}"
+  for_each = var.vms
+  name     = "${each.key}-cloudinit"
 
   user_data = templatefile("${path.module}/cloud-init/user-data.tmpl", {
     hostname       = each.key

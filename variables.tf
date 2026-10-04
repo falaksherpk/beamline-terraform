@@ -1,5 +1,5 @@
 variable "vms" {
-  description = "The 10 beamline lab VMs: name => { ip, memory (MiB baseline), vcpu, disk_gb, id, virtio_mem }. 'id' is a stable 2-digit number (matches the IP's last octet) used to generate deterministic per-VM MAC addresses. 'virtio_mem' is optional."
+  description = "The 13 beamline lab VMs: name => { ip, memory (MiB baseline), vcpu, disk_gb, id, virtio_mem }. 'id' is a stable 2-digit number (matches the IP's last octet) used to generate deterministic per-VM MAC addresses. 'virtio_mem' is optional. (The three hpc-* nodes were added for the SLURM/GPU project; GPU passthrough for hpc-gpu is not currently declared in this Terraform project.)"
   type = map(object({
     ip         = string
     memory     = number
@@ -50,9 +50,4 @@ variable "ssh_public_key_path" {
 
 variable "admin_username" {
   default = "falak"
-}
-
-variable "cloudinit_staging_dir" {
-  description = "Local directory to stage cloud-init ISOs in before upload to libvirt. Must persist across host reboots (do not point this at /tmp or any tmpfs-backed path)."
-  default     = ".cloudinit-staging"
 }

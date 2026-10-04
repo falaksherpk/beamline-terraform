@@ -1,4 +1,4 @@
 *.tfstate
 *.tfstate.*
 .terraform/
-.cloudinit-staging/
+.tmp/
