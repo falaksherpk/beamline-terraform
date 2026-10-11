@@ -1,5 +1,5 @@
 variable "vms" {
-  description = "The 13 beamline lab VMs: name => { ip, memory (MiB baseline), vcpu, disk_gb, id, virtio_mem }. 'id' is a stable 2-digit number (matches the IP's last octet) used to generate deterministic per-VM MAC addresses. 'virtio_mem' is optional. (The three hpc-* nodes were added for the SLURM/GPU project; GPU passthrough for hpc-gpu is not currently declared in this Terraform project.)"
+  description = "The 13 beamline lab VMs: name => { ip, memory (MiB baseline), vcpu, disk_gb, id, virtio_mem }. 'id' is a stable 2-digit number (matches the IP's last octet) used to generate deterministic per-VM MAC addresses. 'virtio_mem' is optional. 'hostdevs' is optional: host PCI functions (domain 0000) passed through with managed='yes'; 'rom_bar' sets <rom bar=...> on that function. (The three hpc-* nodes were added for the SLURM/GPU project; hpc-gpu gets the GTX 750 Ti at 01:00.0 and its HDMI audio at 01:00.1, Ch19.)"
   type = map(object({
     ip         = string
     memory     = number
@@ -12,6 +12,12 @@ variable "vms" {
       requested_size = number
       block_size     = optional(number, 2)
     }))
+    hostdevs = optional(list(object({
+      bus      = number
+      slot     = number
+      function = number
+      rom_bar  = optional(string)
+    })), [])
   }))
 
   default = {
@@ -40,7 +46,13 @@ variable "vms" {
     "hpc-c1.beamline" = { ip = "10.10.10.52", memory = 2048, vcpu = 2, disk_gb = 20, id = 52,
     virtio_mem = { target_size = 2048, requested_size = 512 } }
     "hpc-gpu.beamline" = { ip = "10.10.10.53", memory = 4096, vcpu = 2, disk_gb = 30, id = 53,
-    virtio_mem = { target_size = 2048, requested_size = 512 } }
+      virtio_mem = { target_size = 2048, requested_size = 512 }
+      # rom bar off on the VGA function: SeaBIOS hung at boot without it (pre-loss finding)
+      hostdevs = [
+        { bus = 1, slot = 0, function = 0, rom_bar = "off" },
+        { bus = 1, slot = 0, function = 1 },
+      ]
+    }
   }
 }
 

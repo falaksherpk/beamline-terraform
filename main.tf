@@ -133,6 +133,17 @@ resource "libvirt_domain" "vm" {
         }
       }
     ]
+    # PCI passthrough (Ch19). Only VMs that declare hostdevs get any; for the others the
+    # attribute stays null, exactly as before, so their plan shows no change.
+    hostdevs = length(each.value.hostdevs) == 0 ? null : [
+      for h in each.value.hostdevs : {
+        managed = true
+        subsys_pci = {
+          source = { address = { domain = 0, bus = h.bus, slot = h.slot, function = h.function } }
+        }
+        rom = h.rom_bar == null ? null : { bar = h.rom_bar }
+      }
+    ]
     serials = [
       {
         type   = "pty"
